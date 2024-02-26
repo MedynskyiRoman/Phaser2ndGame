@@ -59,7 +59,7 @@ function create() {
 
     this.anims.create({
         key: 'left',
-        frames: this.anims.generateFrameNumbers('hero', { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers('hero', { start: 1, end: 3 }),
         frameRate: 10,
         repeat: -1
     });
@@ -72,7 +72,7 @@ function create() {
 
     this.anims.create({
         key: 'right',
-        frames: this.anims.generateFrameNumbers('hero', { start: 5, end: 8 }),
+        frames: this.anims.generateFrameNumbers('hero', { start: 5, end: 7 }),
         frameRate: 10,
         repeat: -1
     });
@@ -92,7 +92,7 @@ function create() {
     this.physics.add.collider(smokes, platforms);
     this.physics.add.overlap(player, smokes, collectStar, null, this);
 
-    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' }).setScrollFactor(0);
+    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#FFF' }).setScrollFactor(0);
 
     shells = this.physics.add.group();
 
@@ -120,7 +120,7 @@ function update() {
     }
 
     // Рандомне створення бомб, які летять справа наліво
-    if (Phaser.Math.Between(0, 100) > 98) {
+    if (Phaser.Math.Between(0, 100) > 99) {
         createBomb(this);
     }
 
