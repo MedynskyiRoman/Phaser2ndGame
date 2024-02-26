@@ -1,8 +1,8 @@
 // Конфігурація гри
 var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 1920,
+    height: 1080,
     physics: {
         default: 'arcade',
         arcade: {
@@ -37,11 +37,11 @@ var smokes;
 var shells;
 
 function create() {
-    this.add.image(400, 300, 'background').setDisplaySize(800, 600).setScrollFactor(0);
+    this.add.image(960, 540, 'background').setDisplaySize(1920, 1080).setScrollFactor(0);
 
     // Задаємо розміри світу
-    this.physics.world.bounds.width = 1600;
-    this.physics.world.bounds.height = 600;
+    this.physics.world.bounds.width = 1920;
+    this.physics.world.bounds.height = 1080;
 
     platforms = this.physics.add.staticGroup();
     platforms.create(400, 568, 'platform').setScale(2).refreshBody();
@@ -99,7 +99,7 @@ function create() {
     this.physics.add.collider(player, shells, hitBomb, null, this);
 
     // Налаштування камери, щоб слідувала за гравцем
-    this.cameras.main.setBounds(0, 0, 1600, 600);
+    this.cameras.main.setBounds(0, 0, 800, 600);
     this.cameras.main.startFollow(player);
 }
 
@@ -148,8 +148,8 @@ function collectStar(player, smoke) {
 
 
 function createBomb(game) {
-    var x = 1600; // Змінюємо початкову позицію бомби на правий край екрану
-    var y = Phaser.Math.Between(100, 500);
+    var x = 1920; // Змінюємо початкову позицію бомби на правий край екрану
+    var y = Phaser.Math.Between(100, 970);
     var shell = shells.create(x, y, 'shell');
     shell.setVelocity(-Phaser.Math.Between(100, 200), 0); // Напрямок руху бомби наліво
     shell.body.setAllowGravity(false); // Вимкнення гравітації для бомби
