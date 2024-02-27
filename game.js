@@ -40,7 +40,7 @@ function create() {
     this.add.image(1600, 600, 'background').setDisplaySize(3000, 1200).setScrollFactor(1);
 
     // Задаємо розміри світу
-    this.physics.world.bounds.width = 3000; // Розміри світу для карти паркуру
+    this.physics.world.bounds.width = 3000; // Розміри світу для карти
     this.physics.world.bounds.height = 1200;
 
     platforms = this.physics.add.staticGroup();
@@ -54,13 +54,11 @@ function create() {
     platforms.create(1600, 628, 'platform').setScale(1.5).refreshBody();
     platforms.create(2000, 798, 'platform').setScale(1.5).refreshBody();
     platforms.create(2400, 968, 'platform').setScale(1.5).refreshBody();
-
-    // Додавання додаткових платформ вище
-    platforms.create(2800, 868, 'platform').setScale(1.5).refreshBody(); // Нова, ще правіше
-    platforms.create(2200, 698, 'platform').setScale(1.5).refreshBody(); // Вище і правіше
-    platforms.create(1800, 528, 'platform').setScale(1.5).refreshBody(); // Вище, у центрі
-    platforms.create(1400, 398, 'platform').setScale(1.5).refreshBody(); // Верхня частина карти
-    platforms.create(1000, 268, 'platform').setScale(1.5).refreshBody(); // Верхня частина, лівіше
+    platforms.create(2800, 868, 'platform').setScale(1.5).refreshBody();
+    platforms.create(2200, 698, 'platform').setScale(1.5).refreshBody();
+    platforms.create(1800, 528, 'platform').setScale(1.5).refreshBody();
+    platforms.create(1400, 398, 'platform').setScale(1.5).refreshBody();
+    platforms.create(1000, 268, 'platform').setScale(1.5).refreshBody();
 
     // Спавн гравця
     player = this.physics.add.sprite(100, 950, 'hero');
@@ -133,7 +131,7 @@ function update() {
         player.setVelocityY(-330);
     }
 
-    // Рандомне створення бомб, які летять справа наліво
+    // Рандомне створення ядер, які летять справа наліво
     if (Phaser.Math.Between(0, 100) > 98) {
         createBomb(this);
     }
@@ -162,11 +160,11 @@ function collectStar(player, smoke) {
 
 
 function createBomb(game) {
-    var x = 3000; // Змінюємо початкову позицію бомби на правий край екрану
+    var x = 3000; // Змінюємо початкову позицію ядра на правий край екрану
     var y = Phaser.Math.Between(0, 1200);
     var shell = shells.create(x, y, 'shell');
-    shell.setVelocity(-Phaser.Math.Between(100, 200), 0); // Напрямок руху бомби наліво
-    shell.body.setAllowGravity(false); // Вимкнення гравітації для бомби
+    shell.setVelocity(-Phaser.Math.Between(100, 200), 0); // Напрямок руху ядра наліво
+    shell.body.setAllowGravity(false); // Вимкнення гравітації для ядра
 }
 
 
@@ -176,3 +174,4 @@ function hitBomb(player, shell) {
     player.anims.play('turn');
     gameOver = true;
 }
+
