@@ -37,24 +37,37 @@ var smokes;
 var shells;
 
 function create() {
-    this.add.image(960, 540, 'background').setDisplaySize(1920, 1080).setScrollFactor(0);
+    this.add.image(1600, 600, 'background').setDisplaySize(3000, 1200).setScrollFactor(1);
 
     // Задаємо розміри світу
-    this.physics.world.bounds.width = 1920;
-    this.physics.world.bounds.height = 1080;
+    this.physics.world.bounds.width = 3000; // Розміри світу для карти паркуру
+    this.physics.world.bounds.height = 1200;
 
     platforms = this.physics.add.staticGroup();
-    platforms.create(400, 568, 'platform').setScale(2).refreshBody();
 
-    // Створення додаткових платформ для ширшої карти
-    platforms.create(1200, 400, 'platform');
-    platforms.create(1600, 250, 'platform');
-    platforms.create(2000, 220, 'platform');
+    // Створення базової платформи
+    platforms.create(400, 1068, 'platform').setScale(2).refreshBody();
 
-    player = this.physics.add.sprite(100, 450, 'hero');
+    // Перша серія платформ
+    platforms.create(800, 968, 'platform').setScale(1.5).refreshBody();
+    platforms.create(1200, 798, 'platform').setScale(1.5).refreshBody();
+    platforms.create(1600, 628, 'platform').setScale(1.5).refreshBody();
+    platforms.create(2000, 798, 'platform').setScale(1.5).refreshBody();
+    platforms.create(2400, 968, 'platform').setScale(1.5).refreshBody();
+
+    // Додавання додаткових платформ вище
+    platforms.create(2800, 868, 'platform').setScale(1.5).refreshBody(); // Нова, ще правіше
+    platforms.create(2200, 698, 'platform').setScale(1.5).refreshBody(); // Вище і правіше
+    platforms.create(1800, 528, 'platform').setScale(1.5).refreshBody(); // Вище, у центрі
+    platforms.create(1400, 398, 'platform').setScale(1.5).refreshBody(); // Верхня частина карти
+    platforms.create(1000, 268, 'platform').setScale(1.5).refreshBody(); // Верхня частина, лівіше
+
+    // Спавн гравця
+    player = this.physics.add.sprite(100, 950, 'hero');
     player.setBounce(0.2);
-    player.setCollideWorldBounds(true);
+    player.setCollideWorldBounds(true); // Гравець не випадає з карти
 
+    // Додавання фізики колізії
     this.physics.add.collider(player, platforms);
 
     this.anims.create({
@@ -92,15 +105,16 @@ function create() {
     this.physics.add.collider(smokes, platforms);
     this.physics.add.overlap(player, smokes, collectStar, null, this);
 
-    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#FFF' }).setScrollFactor(0);
+    scoreText = this.add.text(460, 260, 'Score: 0', { fontSize: '32px', fill: '#FFF' }).setScrollFactor(0);
 
     shells = this.physics.add.group();
 
     this.physics.add.collider(player, shells, hitBomb, null, this);
 
-    // Налаштування камери, щоб слідувала за гравцем
-    this.cameras.main.setBounds(0, 0, 800, 600);
-    this.cameras.main.startFollow(player);
+    // Налаштування камери
+    this.cameras.main.setBounds(0, 0, 3000, 1200); // Задати межі світу для камери
+    this.cameras.main.startFollow(player, true, 0.05, 0.05); // Дозволити камері слідкувати за гравцем
+    this.cameras.main.setZoom(1.5); // Збільшити масштаб камери для кращого огляду
 }
 
 function update() {
@@ -120,7 +134,7 @@ function update() {
     }
 
     // Рандомне створення бомб, які летять справа наліво
-    if (Phaser.Math.Between(0, 100) > 99) {
+    if (Phaser.Math.Between(0, 100) > 98) {
         createBomb(this);
     }
 
@@ -148,8 +162,8 @@ function collectStar(player, smoke) {
 
 
 function createBomb(game) {
-    var x = 1920; // Змінюємо початкову позицію бомби на правий край екрану
-    var y = Phaser.Math.Between(100, 970);
+    var x = 3000; // Змінюємо початкову позицію бомби на правий край екрану
+    var y = Phaser.Math.Between(0, 1200);
     var shell = shells.create(x, y, 'shell');
     shell.setVelocity(-Phaser.Math.Between(100, 200), 0); // Напрямок руху бомби наліво
     shell.body.setAllowGravity(false); // Вимкнення гравітації для бомби
