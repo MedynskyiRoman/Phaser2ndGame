@@ -28,6 +28,7 @@ function preload() {
     this.load.image('platform', 'assets/platform.png');
     this.load.image('smoke', 'assets/smoke.png');
     this.load.image('shell', 'assets/shell.png');
+    this.load.image('fon', 'assets/fon.png');
     this.load.spritesheet('hero', 'assets/hero.png', { frameWidth: 32, frameHeight: 48 });
 }
 
@@ -35,30 +36,57 @@ var player;
 var cursors;
 var smokes;
 var shells;
+var worldWidth = 3000;
+var worldHeight = 1200;
 
 function create() {
-    this.add.image(1600, 600, 'background').setDisplaySize(3000, 1200).setScrollFactor(1);
+    //this.add.image(1600, 600, 'background').setDisplaySize(3000, 1200).setScrollFactor(1);
+
+    this.add.tileSprite(0, 0, worldWidth, worldHeight, 'fon').setOrigin(0,0);
 
     // Задаємо розміри світу
-    this.physics.world.bounds.width = 3000; // Розміри світу для карти
-    this.physics.world.bounds.height = 1200;
+    this.physics.world.bounds.width = worldWidth; // Розміри світу для карти
+    this.physics.world.bounds.height = worldHeight;
 
     platforms = this.physics.add.staticGroup();
 
-    // Створення базової платформи
-    platforms.create(400, 1068, 'platform').setScale(2).refreshBody();
+    for(var x = 0; x < worldWidth; x = x + 450) {
+        console.log(x)
+        platforms.create(x, 1100, 'platform').setOrigin(0,0).refreshBody();
+    }
 
+
+
+
+
+
+    // Створення базової платформи
+    //platforms.create(400, 1068, 'platform').setScale(2).refreshBody();
     // Перша серія платформ
-    platforms.create(800, 968, 'platform').setScale(1.5).refreshBody();
-    platforms.create(1200, 798, 'platform').setScale(1.5).refreshBody();
-    platforms.create(1600, 628, 'platform').setScale(1.5).refreshBody();
-    platforms.create(2000, 798, 'platform').setScale(1.5).refreshBody();
-    platforms.create(2400, 968, 'platform').setScale(1.5).refreshBody();
-    platforms.create(2800, 868, 'platform').setScale(1.5).refreshBody();
-    platforms.create(2200, 698, 'platform').setScale(1.5).refreshBody();
-    platforms.create(1800, 528, 'platform').setScale(1.5).refreshBody();
-    platforms.create(1400, 398, 'platform').setScale(1.5).refreshBody();
-    platforms.create(1000, 268, 'platform').setScale(1.5).refreshBody();
+    //platforms.create(800, 968, 'platform').setScale(1.5).refreshBody();
+    //platforms.create(1200, 798, 'platform').setScale(1.5).refreshBody();
+    //platforms.create(1600, 628, 'platform').setScale(1.5).refreshBody();
+    //platforms.create(2000, 798, 'platform').setScale(1.5).refreshBody();
+    //platforms.create(2400, 968, 'platform').setScale(1.5).refreshBody();
+    //platforms.create(2800, 868, 'platform').setScale(1.5).refreshBody();
+    //platforms.create(2200, 698, 'platform').setScale(1.5).refreshBody();
+    //platforms.create(1800, 528, 'platform').setScale(1.5).refreshBody();
+    //platforms.create(1400, 398, 'platform').setScale(1.5).refreshBody();
+    //platforms.create(1000, 268, 'platform').setScale(1.5).refreshBody();
+
+    //this.add.text(20, 20, 'Score: 0')
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Спавн гравця
     player = this.physics.add.sprite(100, 950, 'hero');
@@ -92,7 +120,7 @@ function create() {
 
     smokes = this.physics.add.group({
         key: 'smoke',
-        repeat: 24, // Збільшуємо кількість цілей для ширшої карти
+        repeat: 50, // Збільшуємо кількість цілей для ширшої карти
         setXY: { x: 12, y: 0, stepX: 70 }
     });
 
@@ -103,14 +131,14 @@ function create() {
     this.physics.add.collider(smokes, platforms);
     this.physics.add.overlap(player, smokes, collectStar, null, this);
 
-    scoreText = this.add.text(460, 260, 'Score: 0', { fontSize: '32px', fill: '#FFF' }).setScrollFactor(0);
+    scoreText = this.add.text(360, 260, 'Score: 0', { fontSize: '32px', fill: '#FFF' }).setScrollFactor(0);
 
     shells = this.physics.add.group();
 
     this.physics.add.collider(player, shells, hitBomb, null, this);
 
     // Налаштування камери
-    this.cameras.main.setBounds(0, 0, 3000, 1200); // Задати межі світу для камери
+    this.cameras.main.setBounds(0, 0, worldWidth, worldHeight); // Задати межі світу для камери
     this.cameras.main.startFollow(player, true, 0.05, 0.05); // Дозволити камері слідкувати за гравцем
     this.cameras.main.setZoom(1.5); // Збільшити масштаб камери для кращого огляду
 }
@@ -137,7 +165,7 @@ function update() {
     }
 
     // Перевірка чи гравець торкнувся нижньої границі екрана
-    if (player.y >= this.game.config.height - player.height) {
+    if (player.y >= worldHeight - player.height) {
         gameOver = true;
         this.physics.pause();
         player.setTint(0xff0000);
@@ -151,7 +179,7 @@ function collectStar(player, smoke) {
     scoreText.setText('Score: ' + score + '/210');
 
     // Якщо гравець набрав 210 очок
-    if (score >= 210) {
+    if (score >= 500) {
         scoreText.setStyle({ fill: '#00ff00' }); // Змінюємо колір тексту на зелений
         gameOver = true;
         this.physics.pause(); // Зупиняємо фізику гри
@@ -160,8 +188,8 @@ function collectStar(player, smoke) {
 
 
 function createBomb(game) {
-    var x = 3000; // Змінюємо початкову позицію ядра на правий край екрану
-    var y = Phaser.Math.Between(0, 1200);
+    var x = worldWidth; // Змінюємо початкову позицію ядра на правий край екрану
+    var y = Phaser.Math.Between(0, worldHeight);
     var shell = shells.create(x, y, 'shell');
     shell.setVelocity(-Phaser.Math.Between(100, 200), 0); // Напрямок руху ядра наліво
     shell.body.setAllowGravity(false); // Вимкнення гравітації для ядра
