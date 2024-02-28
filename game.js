@@ -176,10 +176,10 @@ function collectStar(player, smoke) {
     smoke.disableBody(true, true);
 
     score += 10;
-    scoreText.setText('Score: ' + score + '/210');
+    scoreText.setText('Score: ' + score + '/400');
 
-    // Якщо гравець набрав 210 очок
-    if (score >= 500) {
+    // Якщо гравець набрав 400 очок
+    if (score >= 400) {
         scoreText.setStyle({ fill: '#00ff00' }); // Змінюємо колір тексту на зелений
         gameOver = true;
         this.physics.pause(); // Зупиняємо фізику гри
