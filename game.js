@@ -7,7 +7,7 @@ var config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 300 },
-            debug: false
+            debug: true
         }
     },
     scene: {
@@ -29,6 +29,7 @@ function preload() {
     this.load.image('smoke', 'assets/smoke.png');
     this.load.image('shell', 'assets/shell.png');
     this.load.image('fon', 'assets/fon.png');
+    this.load.image('mushroom', 'assets/Mushroom.png');
     this.load.spritesheet('hero', 'assets/hero.png', { frameWidth: 32, frameHeight: 48 });
 }
 
@@ -36,8 +37,9 @@ var player;
 var cursors;
 var smokes;
 var shells;
-var worldWidth = 3000;
-var worldHeight = 1200;
+var mushroom;
+var worldWidth = 9600;
+var worldHeight = 1080;
 
 function create() {
     //this.add.image(1600, 600, 'background').setDisplaySize(3000, 1200).setScrollFactor(1);
@@ -50,14 +52,14 @@ function create() {
 
     platforms = this.physics.add.staticGroup();
 
-    for(var x = 0; x < worldWidth; x = x + 450) {
-        console.log(x)
-        platforms.create(x, 1100, 'platform').setOrigin(0,0).refreshBody();
+    for(var x = 0; x < worldWidth; x = x + 400) {
+       
+        platforms.create(x, 1080, 'platform').setOrigin(0,1).refreshBody();
+        //console.log('platforms x: ',x)
     }
 
 
-
-
+    createMushrooms(this, worldWidth);
 
 
     // Створення базової платформи
@@ -75,12 +77,6 @@ function create() {
     //platforms.create(1000, 268, 'platform').setScale(1.5).refreshBody();
 
     //this.add.text(20, 20, 'Score: 0')
-
-
-
-
-
-
 
 
 
@@ -203,3 +199,23 @@ function hitBomb(player, shell) {
     gameOver = true;
 }
 
+function createMushrooms(game, worldWidth) {
+    const mushrooms = game.physics.add.staticGroup();
+    let previousX = 100; // Початкова точка для першого гриба
+
+    for (x = previousX; x < worldWidth; x += Phaser.Math.Between(100, 400)) {
+        const mushroomY = 1080;
+
+        if (x - previousX > 50) {
+            // Створення гриба
+            console.log('mushroom x: ', x)
+            const mushroom = mushrooms.create(x, mushroomY, 'mushroom').setOrigin(0, 0.5);
+
+            // Встановлення випадкового масштабу для гриба
+            const scale = Phaser.Math.FloatBetween(0.8, 1);
+            mushroom.setScale(scale);
+
+            previousX = x; // Оновлення позиції X для наступного гриба
+        }
+    }
+}
