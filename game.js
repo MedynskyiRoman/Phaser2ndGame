@@ -30,6 +30,7 @@ function preload() {
     this.load.image('shell', 'assets/shell.png');
     this.load.image('fon', 'assets/fon.png');
     this.load.image('mushroom', 'assets/Mushroom.png');
+    this.load.image('tree', 'assets/Tree.png');
     this.load.spritesheet('hero', 'assets/hero.png', { frameWidth: 32, frameHeight: 48 });
 }
 
@@ -60,7 +61,7 @@ function create() {
 
 
     createMushrooms(this, worldWidth);
-
+    createTrees(this, worldWidth);
 
     // Створення базової платформи
     //platforms.create(400, 1068, 'platform').setScale(2).refreshBody();
@@ -86,8 +87,7 @@ function create() {
 
     // Спавн гравця
     player = this.physics.add.sprite(100, 950, 'hero');
-    player.setBounce(0.2);
-    player.setCollideWorldBounds(true); // Гравець не випадає з карти
+    player.setBounce(0.2).setCollideWorldBounds(true).setDepth(1);
 
     // Додавання фізики колізії
     this.physics.add.collider(player, platforms);
@@ -201,21 +201,22 @@ function hitBomb(player, shell) {
 
 function createMushrooms(game, worldWidth) {
     const mushrooms = game.physics.add.staticGroup();
-    let previousX = 100; // Початкова точка для першого гриба
 
-    for (x = previousX; x < worldWidth; x += Phaser.Math.Between(100, 400)) {
-        const mushroomY = 1080;
+    for (let x = 100; x < worldWidth; x += Phaser.Math.Between(200, 800)) {
+        // Врахування масштабу при розрахунку Y-позиції, щоб гриби дотикалися до землі
+        const scale = Phaser.Math.FloatBetween(0.8, 1);
+        const mushroom = mushrooms.create(x, game.scale.height - 50, 'mushroom').setOrigin(0, 1).setScale(scale);
+    }
+}
 
-        if (x - previousX > 50) {
-            // Створення гриба
-            console.log('mushroom x: ', x)
-            const mushroom = mushrooms.create(x, mushroomY, 'mushroom').setOrigin(0, 0.5);
+function createTrees(game, worldWidth) {
+    const trees = game.physics.add.staticGroup();
 
-            // Встановлення випадкового масштабу для гриба
-            const scale = Phaser.Math.FloatBetween(0.8, 1);
-            mushroom.setScale(scale);
+    for (let x = 0; x < worldWidth; x += Phaser.Math.Between(300, 900)) {
+        const scale = Phaser.Math.FloatBetween(0.8, 1.2);
+        const tree = trees.create(x, game.scale.height - 50, 'tree').setOrigin(0, 1).setScale(scale);
 
-            previousX = x; // Оновлення позиції X для наступного гриба
-        }
+        // Встановлення глибини дерев за гравцем
+        tree.setDepth(2);
     }
 }
