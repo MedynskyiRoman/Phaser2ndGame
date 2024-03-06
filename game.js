@@ -39,7 +39,7 @@ var cursors;
 var smokes;
 var shells;
 var mushroom;
-var worldWidth = 9600;
+var worldWidth = config.width * 4;
 var worldHeight = 1080;
 
 function create() {
@@ -87,14 +87,14 @@ function create() {
 
     // Спавн гравця
     player = this.physics.add.sprite(100, 950, 'hero');
-    player.setBounce(0.2).setCollideWorldBounds(true).setDepth(1);
+    player.setBounce(0.2).setCollideWorldBounds(true).setDepth(2);
 
     // Додавання фізики колізії
     this.physics.add.collider(player, platforms);
 
     this.anims.create({
         key: 'left',
-        frames: this.anims.generateFrameNumbers('hero', { start: 1, end: 3 }),
+        frames: this.anims.generateFrameNumbers('hero', { start: 0, end: 2 }),
         frameRate: 10,
         repeat: -1
     });
@@ -107,7 +107,7 @@ function create() {
 
     this.anims.create({
         key: 'right',
-        frames: this.anims.generateFrameNumbers('hero', { start: 5, end: 7 }),
+        frames: this.anims.generateFrameNumbers('hero', { start: 5, end: 6 }),
         frameRate: 10,
         repeat: -1
     });
@@ -204,8 +204,10 @@ function createMushrooms(game, worldWidth) {
 
     for (let x = 100; x < worldWidth; x += Phaser.Math.Between(200, 800)) {
         // Врахування масштабу при розрахунку Y-позиції, щоб гриби дотикалися до землі
-        const scale = Phaser.Math.FloatBetween(0.8, 1);
-        const mushroom = mushrooms.create(x, game.scale.height - 50, 'mushroom').setOrigin(0, 1).setScale(scale);
+        const scale = Phaser.Math.FloatBetween(0.2, 2);
+        console.log('scale: '+ scale)
+        const mushroom = mushrooms.create(x, 1080-32, 'mushroom').setOrigin(0, 1).setScale(scale);
+        mushrooms.setDepth(1);
     }
 }
 
@@ -214,9 +216,9 @@ function createTrees(game, worldWidth) {
 
     for (let x = 0; x < worldWidth; x += Phaser.Math.Between(300, 900)) {
         const scale = Phaser.Math.FloatBetween(0.8, 1.2);
-        const tree = trees.create(x, game.scale.height - 50, 'tree').setOrigin(0, 1).setScale(scale);
+        const tree = trees.create(x, game.scale.height - 32, 'tree').setOrigin(0, 1).setScale(scale);
 
         // Встановлення глибини дерев за гравцем
-        tree.setDepth(2);
+        tree.setDepth(Phaser.Math.Between(1, 4));
     }
 }
