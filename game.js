@@ -31,6 +31,10 @@ function preload() {
     this.load.image('fon', 'assets/fon.png');
     this.load.image('mushroom', 'assets/Mushroom.png');
     this.load.image('tree', 'assets/Tree.png');
+    this.load.image('leftisl', 'assets/left_island.png');
+    this.load.image('rghtisl', 'assets/right_island.png');
+    this.load.image('midisl', 'assets/middle_island.png');
+
     this.load.spritesheet('hero', 'assets/hero.png', { frameWidth: 32, frameHeight: 48 });
 }
 
@@ -62,6 +66,7 @@ function create() {
 
     createMushrooms(this, worldWidth);
     createTrees(this, worldWidth);
+    createIslands(this, worldWidth);
 
     // Створення базової платформи
     //platforms.create(400, 1068, 'platform').setScale(2).refreshBody();
@@ -220,5 +225,11 @@ function createTrees(game, worldWidth) {
 
         // Встановлення глибини дерев за гравцем
         tree.setDepth(Phaser.Math.Between(1, 4));
+    }
+}
+
+function createIslands(game, worldWidth) {
+    for (var x = 0; x<worldWidth; x = x + Phaser.Math.FloatBetween(400, 500)){
+        var y = Phaser.Math.FloatBetween(128, 128*6)
     }
 }
