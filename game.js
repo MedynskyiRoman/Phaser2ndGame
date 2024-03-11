@@ -19,6 +19,10 @@ var config = {
 
 var game = new Phaser.Game(config);
 
+var lives;
+var livesText;
+var restartButton;
+
 var score = 0;
 var scoreText;
 var gameOver;
@@ -34,7 +38,7 @@ function preload() {
     this.load.image('leftisl', 'assets/left_island.png');
     this.load.image('rghtisl', 'assets/right_island.png');
     this.load.image('midisl', 'assets/middle_island.png');
-
+    this.load.image('live', 'assets/heart.png');
     this.load.spritesheet('hero', 'assets/hero.png', { frameWidth: 32, frameHeight: 48 });
 }
 
@@ -142,6 +146,13 @@ function create() {
     this.cameras.main.setBounds(0, 0, worldWidth, worldHeight); // Задати межі світу для камери
     this.cameras.main.startFollow(player, true, 0.05, 0.05); // Дозволити камері слідкувати за гравцем
     this.cameras.main.setZoom(1.5); // Збільшити масштаб камери для кращого огляду
+
+
+    lives = 3; //Кількість життів
+
+    livesText = this.add.text(1400, 260, 'Lives: ' + lives, { fontSize: '32px', fill: '#FFF'}).setScrollFactor(0);
+
+    //restartButton = this.add.text(360, 20, 'Restart', { fontSize: '32px', fill: '#FFF'}).setInteractive().on('pointerdown', () => this.scene.restart());
 }
 
 function update() {
@@ -198,10 +209,22 @@ function createBomb(game) {
 
 
 function hitBomb(player, shell) {
-    this.physics.pause();
-    player.setTint(0xff0000);
-    player.anims.play('turn');
-    gameOver = true;
+    shell.disableBody(true, true);
+
+    lives -= 1;
+    livesText.setText('Lives: ' + lives);
+
+    if (lives <= 0) {
+        gameOver = true;
+        this.physics.pause();
+        player.setTint(0xff0000);
+        player.anims.play('turn');
+    }
+    
+    //this.physics.pause();
+    //player.setTint(0xff0000);
+    //player.anims.play('turn');
+    //gameOver = true;
 }
 
 function createMushrooms(game, worldWidth) {
