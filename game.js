@@ -38,7 +38,7 @@ function preload() {
     this.load.image('leftisl', 'assets/left_island.png');
     this.load.image('rghtisl', 'assets/right_island.png');
     this.load.image('midisl', 'assets/middle_island.png');
-    this.load.image('live', 'assets/heart.png');
+    this.load.image('live', 'assets/live.png');
     this.load.spritesheet('hero', 'assets/hero.png', { frameWidth: 32, frameHeight: 48 });
 }
 
@@ -151,8 +151,8 @@ function create() {
     lives = 3; //Кількість життів
 
     livesText = this.add.text(1400, 260, 'Lives: ' + lives, { fontSize: '32px', fill: '#FFF'}).setScrollFactor(0);
-
-    //restartButton = this.add.text(360, 20, 'Restart', { fontSize: '32px', fill: '#FFF'}).setInteractive().on('pointerdown', () => this.scene.restart());
+    
+    createLives(this);
 }
 
 function update() {
@@ -215,12 +215,13 @@ function hitBomb(player, shell) {
     livesText.setText('Lives: ' + lives);
 
     if (lives <= 0) {
+        livesText.setStyle({ fill: '#ff0000' });
         gameOver = true;
         this.physics.pause();
         player.setTint(0xff0000);
         player.anims.play('turn');
     }
-    
+
     //this.physics.pause();
     //player.setTint(0xff0000);
     //player.anims.play('turn');
@@ -255,4 +256,21 @@ function createIslands(game, worldWidth) {
     for (var x = 0; x<worldWidth; x = x + Phaser.Math.FloatBetween(400, 500)){
         var y = Phaser.Math.FloatBetween(128, 128*6)
     }
+}
+
+function createLives(game) {
+    const livesGroup = game.physics.add.group();
+    
+    for (let x = 2000; x < worldWidth; x += 2000) {
+        livesGroup.create(x, game.scale.height - 100, 'live').setOrigin(0.5, 1);
+    }
+
+    game.physics.add.collider(livesGroup, platforms);
+    game.physics.add.overlap(player, livesGroup, collectLife, null, game);
+}
+
+function collectLife(player, life) {
+    life.disableBody(true, true); // Видаляємо об'єкт життя з ігрового світу
+    lives += 1;
+    livesText.setText('Lives: ' + lives);
 }
