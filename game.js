@@ -153,6 +153,10 @@ function create() {
     livesText = this.add.text(1400, 260, 'Lives: ' + lives, { fontSize: '32px', fill: '#FFF'}).setScrollFactor(0);
     
     createLives(this);
+
+    // Додавання кнопки перезавантаження
+    var resetButton = this.add.text(400, 450, 'Reset', { fontSize: '32px', fill: '#FFFFFF' }).setInteractive().setScrollFactor(0);
+    resetButton.on('pointerdown', restartGame, this);
 }
 
 function update() {
@@ -221,11 +225,6 @@ function hitBomb(player, shell) {
         player.setTint(0xff0000);
         player.anims.play('turn');
     }
-
-    //this.physics.pause();
-    //player.setTint(0xff0000);
-    //player.anims.play('turn');
-    //gameOver = true;
 }
 
 function createMushrooms(game, worldWidth) {
@@ -270,7 +269,13 @@ function createLives(game) {
 }
 
 function collectLife(player, life) {
-    life.disableBody(true, true); // Видаляємо об'єкт життя з ігрового світу
+    life.disableBody(true, true);
     lives += 1;
     livesText.setText('Lives: ' + lives);
+}
+
+function restartGame() {
+    this.scene.restart();
+    score = 0; // Скидання очків до 0
+    lives = 3; // Скидання кількості життів до початкової кількості
 }
