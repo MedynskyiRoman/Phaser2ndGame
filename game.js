@@ -21,6 +21,7 @@ var game = new Phaser.Game(config);
 
 var lives;
 var livesText;
+var lifeLine;
 var restartButton;
 
 var score = 0;
@@ -47,7 +48,7 @@ var cursors;
 var smokes;
 var shells;
 var mushroom;
-var worldWidth = config.width * 4;
+var worldWidth = config.width * 2;
 var worldHeight = 1080;
 
 function create() {
@@ -136,7 +137,7 @@ function create() {
     this.physics.add.collider(smokes, platforms);
     this.physics.add.overlap(player, smokes, collectStar, null, this);
 
-    scoreText = this.add.text(360, 260, 'Score: 0', { fontSize: '32px', fill: '#FFF' }).setScrollFactor(0);
+    scoreText = this.add.text(360, 260, 'Score: ' + score + '/400', { fontSize: '32px', fill: '#FFF' }).setScrollFactor(0);
 
     shells = this.physics.add.group();
 
@@ -150,7 +151,7 @@ function create() {
 
     lives = 3; //Кількість життів
 
-    livesText = this.add.text(1400, 260, 'Lives: ' + lives, { fontSize: '32px', fill: '#FFF'}).setScrollFactor(0);
+    livesText = this.add.text(1000, 260, showLife(), { fontSize: '32px', fill: '#FFF'}).setScrollFactor(0);
     
     createLives(this);
 
@@ -216,7 +217,7 @@ function hitBomb(player, shell) {
     shell.disableBody(true, true);
 
     lives -= 1;
-    livesText.setText('Lives: ' + lives);
+    livesText.setText('Lives: ' + showLife());
 
     if (lives <= 0) {
         livesText.setStyle({ fill: '#ff0000' });
@@ -271,11 +272,21 @@ function createLives(game) {
 function collectLife(player, life) {
     life.disableBody(true, true);
     lives += 1;
-    livesText.setText('Lives: ' + lives);
+    livesText.setText('Life: ' + showLife());
 }
 
 function restartGame() {
     this.scene.restart();
-    score = 0; // Скидання очків до 0
-    lives = 3; // Скидання кількості життів до початкової кількості
+    console.log('restart')
+    // score = 0; // Скидання очків до 0
+    // lives = 3; // Скидання кількості життів до початкової кількості
+}
+
+function showLife() {
+    var lifeLine = ''
+
+    for (var i = 0; i < lives; i++) {
+        lifeLine += '❤'
+    }
+    return lifeLine
 }
