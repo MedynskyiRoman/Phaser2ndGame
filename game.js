@@ -151,7 +151,7 @@ function create() {
 
     lives = 3; //Кількість життів
 
-    livesText = this.add.text(1000, 260, showLife(), { fontSize: '32px', fill: '#FFF'}).setScrollFactor(0);
+    livesText = this.add.text(1250, 260, 'Life:' + showLife(), { fontSize: '32px', fill: '#FFF'}).setScrollFactor(0);
     
     createLives(this);
 
@@ -217,7 +217,7 @@ function hitBomb(player, shell) {
     shell.disableBody(true, true);
 
     lives -= 1;
-    livesText.setText('Lives: ' + showLife());
+    livesText.setText('Life: ' + showLife());
 
     if (lives <= 0) {
         livesText.setStyle({ fill: '#ff0000' });
