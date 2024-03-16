@@ -262,7 +262,7 @@ function createLives(game) {
     const livesGroup = game.physics.add.group();
     
     for (let x = 2000; x < worldWidth; x += 2000) {
-        livesGroup.create(x, game.scale.height - 100, 'live').setOrigin(0.5, 1);
+        livesGroup.create(x, game.scale.height - 100, 'live').setOrigin(0.5, 1).setDepth(5);
     }
 
     game.physics.add.collider(livesGroup, platforms);
