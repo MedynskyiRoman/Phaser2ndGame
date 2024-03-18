@@ -23,7 +23,6 @@ var lives;
 var livesText;
 var lifeLine;
 var restartButton;
-
 var score = 0;
 var scoreText;
 var gameOver;
@@ -50,6 +49,7 @@ var shells;
 var mushroom;
 var worldWidth = config.width * 2;
 var worldHeight = 1080;
+var yStart = 315;
 
 function create() {
     //this.add.image(1600, 600, 'background').setDisplaySize(3000, 1200).setScrollFactor(1);
@@ -72,6 +72,7 @@ function create() {
     createMushrooms(this, worldWidth);
     createTrees(this, worldWidth);
     createIslands(this, worldWidth);
+    flyIslands();
 
     // Створення базової платформи
     //platforms.create(400, 1068, 'platform').setScale(2).refreshBody();
@@ -289,4 +290,24 @@ function showLife() {
         lifeLine += '❤'
     }
     return lifeLine
+}
+
+function flyIslands() {
+    var x = 0;
+    while (x < worldWidth) {
+        x += Phaser.Math.Between(400, 500); // Додаємо випадкову відстань до x для наступного острова
+        y += Phaser.Math.Between(200, 330);
+        var yStep = Phaser.Math.Between(1, 3);
+        var y = yStart * yStep;
+
+        platforms.create(x, y, 'leftisl').setOrigin(1, 1).setScale(0.5).setSize(64, 46.5).setDepth(10);
+
+        var i;
+        var islandLength = Phaser.Math.Between(1, 3); // Визначаємо довжину острова
+        for (i = 1; i <= islandLength; i++) {
+            platforms.create(x + 64 * i, y, 'midisl').setOrigin(1, 1).setScale(0.5).setSize(64, 46.5).setDepth(10);
+        }
+
+        platforms.create(x + 64 * (i), y, 'rghtisl').setOrigin(1, 1).setScale(0.5).setSize(64, 46.5).setDepth(10);
+    }
 }
