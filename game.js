@@ -19,13 +19,13 @@ var config = {
 
 var game = new Phaser.Game(config);
 
-var lives;
-var livesText;
-var lifeLine;
-var restartButton;
+var platforms, player, enemies, cursors, smokes, shells, scoreText, livesText, lives, lifeLine, restartButton, mushroom;
 var score = 0;
-var scoreText;
-var gameOver;
+var lives = 3;
+var gameOver = false;
+var worldWidth = config.width * 2;
+var worldHeight = 1080;
+var yStart = 315;
 
 function preload() {
     this.load.image('background', 'assets/background.png');
@@ -39,69 +39,36 @@ function preload() {
     this.load.image('rghtisl', 'assets/right_island.png');
     this.load.image('midisl', 'assets/middle_island.png');
     this.load.image('live', 'assets/live.png');
+    this.load.image('bullet', 'assets/bullet.png');
+    this.load.image('enemy', 'assets/enemy.png');
     this.load.spritesheet('hero', 'assets/hero.png', { frameWidth: 32, frameHeight: 48 });
 }
 
-var player;
-var cursors;
-var smokes;
-var shells;
-var mushroom;
-var worldWidth = config.width * 2;
-var worldHeight = 1080;
-var yStart = 315;
 
 function create() {
-    //this.add.image(1600, 600, 'background').setDisplaySize(3000, 1200).setScrollFactor(1);
 
     this.add.tileSprite(0, 0, worldWidth, worldHeight, 'fon').setOrigin(0,0);
-
-    // Задаємо розміри світу
     this.physics.world.bounds.width = worldWidth; // Розміри світу для карти
     this.physics.world.bounds.height = worldHeight;
 
     platforms = this.physics.add.staticGroup();
-
     for(var x = 0; x < worldWidth; x = x + 400) {
-       
         platforms.create(x, 1080, 'platform').setOrigin(0,1).refreshBody();
-        //console.log('platforms x: ',x)
     }
-
-
-    createMushrooms(this, worldWidth);
-    createTrees(this, worldWidth);
-    createIslands(this, worldWidth);
-    flyIslands();
-
-    // Створення базової платформи
-    //platforms.create(400, 1068, 'platform').setScale(2).refreshBody();
-    // Перша серія платформ
-    //platforms.create(800, 968, 'platform').setScale(1.5).refreshBody();
-    //platforms.create(1200, 798, 'platform').setScale(1.5).refreshBody();
-    //platforms.create(1600, 628, 'platform').setScale(1.5).refreshBody();
-    //platforms.create(2000, 798, 'platform').setScale(1.5).refreshBody();
-    //platforms.create(2400, 968, 'platform').setScale(1.5).refreshBody();
-    //platforms.create(2800, 868, 'platform').setScale(1.5).refreshBody();
-    //platforms.create(2200, 698, 'platform').setScale(1.5).refreshBody();
-    //platforms.create(1800, 528, 'platform').setScale(1.5).refreshBody();
-    //platforms.create(1400, 398, 'platform').setScale(1.5).refreshBody();
-    //platforms.create(1000, 268, 'platform').setScale(1.5).refreshBody();
-
-    //this.add.text(20, 20, 'Score: 0')
-
-
-
-
-
-
 
     // Спавн гравця
     player = this.physics.add.sprite(100, 950, 'hero');
-    player.setBounce(0.2).setCollideWorldBounds(true).setDepth(2);
+    if (player) {
+        player.setBounce(0.2).setCollideWorldBounds(true).setDepth(2);
+        this.physics.add.collider(player, platforms);
+    }
 
-    // Додавання фізики колізії
-    this.physics.add.collider(player, platforms);
+    cursors = this.input.keyboard.createCursorKeys();
+    if (cursors) {
+        if (cursors.left.isDown) {
+            player.setVelocityX(-160);
+        }
+    }
 
     this.anims.create({
         key: 'left',
@@ -155,6 +122,10 @@ function create() {
     livesText = this.add.text(1250, 260, 'Life:' + showLife(), { fontSize: '32px', fill: '#FFF'}).setScrollFactor(0);
     
     createLives(this);
+    createMushrooms(this, worldWidth);
+    createTrees(this, worldWidth);
+    createIslands(this, worldWidth);
+    flyIslands();
 
     // Додавання кнопки перезавантаження
     var resetButton = this.add.text(400, 450, 'Reset', { fontSize: '32px', fill: '#FFFFFF' }).setInteractive().setScrollFactor(0);
@@ -162,6 +133,7 @@ function create() {
 }
 
 function update() {
+    if (player && cursors){
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
         player.anims.play('left', true);
@@ -176,7 +148,7 @@ function update() {
     if (cursors.up.isDown && player.body.touching.down) {
         player.setVelocityY(-330);
     }
-
+}
     // Рандомне створення ядер, які летять справа наліво
     if (Phaser.Math.Between(0, 100) > 98) {
         createBomb(this);
@@ -215,17 +187,10 @@ function createBomb(game) {
 
 
 function hitBomb(player, shell) {
-    shell.disableBody(true, true);
-
-    lives -= 1;
-    livesText.setText('Life: ' + showLife());
-
-    if (lives <= 0) {
-        livesText.setStyle({ fill: '#ff0000' });
-        gameOver = true;
-        this.physics.pause();
-        player.setTint(0xff0000);
-        player.anims.play('turn');
+    if (player && shell) {
+        shell.disableBody(true, true);
+        lives -= 1;
+        updateLivesDisplay(); // Використовуйте функцію для оновлення відображення життів
     }
 }
 
@@ -235,7 +200,6 @@ function createMushrooms(game, worldWidth) {
     for (let x = 100; x < worldWidth; x += Phaser.Math.Between(200, 800)) {
         // Врахування масштабу при розрахунку Y-позиції, щоб гриби дотикалися до землі
         const scale = Phaser.Math.FloatBetween(0.2, 2);
-        console.log('scale: '+ scale)
         const mushroom = mushrooms.create(x, 1080-32, 'mushroom').setOrigin(0, 1).setScale(scale);
         mushrooms.setDepth(1);
     }
@@ -276,10 +240,15 @@ function collectLife(player, life) {
     livesText.setText('Life: ' + showLife());
 }
 
+function updateLivesDisplay() {
+    if (livesText) {
+        livesText.setText('Life: ' + showLife());
+    }
+}
+
 function restartGame() {
     this.scene.restart();
-    console.log('restart')
-    // score = 0; // Скидання очків до 0
+    score = 0;
     // lives = 3; // Скидання кількості життів до початкової кількості
 }
 
