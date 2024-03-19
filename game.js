@@ -1,3 +1,5 @@
+//!!У коді проблеми з ворогами, і кнопка пробіл, кулі.!!
+
 // Конфігурація гри
 var config = {
     type: Phaser.AUTO,
@@ -126,6 +128,9 @@ function create() {
     createTrees(this, worldWidth);
     createIslands(this, worldWidth);
     flyIslands();
+    initializeEnemies(this);
+    createBullets(this);
+    setupBulletCollisions(this);
 
     // Додавання кнопки перезавантаження
     var resetButton = this.add.text(400, 450, 'Reset', { fontSize: '32px', fill: '#FFFFFF' }).setInteractive().setScrollFactor(0);
@@ -160,6 +165,9 @@ function update() {
         this.physics.pause();
         player.setTint(0xff0000);
     }
+
+    updateEnemyMovement(this);
+    //shootBullet(this);
 }
 
 function collectStar(player, smoke) {
@@ -279,4 +287,54 @@ function flyIslands() {
 
         platforms.create(x + 64 * (i), y, 'rghtisl').setOrigin(1, 1).setScale(0.5).setSize(64, 46.5).setDepth(10);
     }
+}
+
+
+//Вороги та постріли
+
+function initializeEnemies(scene) {
+    scene.enemies = scene.physics.add.group();
+    for(let i = 0; i < 5; i++) {
+        var x = Phaser.Math.Between(100, scene.scale.width - 100);
+        var y = Phaser.Math.Between(100, scene.scale.height - 100);
+        var enemy = scene.enemies.create(x, y, 'enemy');
+        enemy.setCollideWorldBounds(true);
+    }
+}
+
+function updateEnemyMovement(scene) {
+    scene.enemies.children.iterate(function(enemy) {
+        if (scene.player && enemy) {
+            // Тепер, коли ми впевнилися, що scene.player існує, ми можемо безпечно використовувати його координати
+            if (Phaser.Math.Distance.Between(scene.player.x, scene.player.y, enemy.x, enemy.y) < 400) {
+                scene.physics.moveToObject(enemy, scene.player, 120);
+            } else {
+                enemy.setVelocity(Phaser.Math.Between(-100, 100), Phaser.Math.Between(-100, 100));
+            }
+        }
+    });
+}
+
+
+function createBullets(scene) {
+    scene.bullets = scene.physics.add.group({
+        defaultKey: 'bullet',
+        maxSize: 10
+    });
+}
+
+// function shootBullet(scene) {
+//     if (scene.cursors.space.isDown) {
+//         var bullet = scene.bullets.get(scene.player.x, scene.player.y - 20);
+//         if (bullet) {
+//             bullet.setActive(true).setVisible(true).setVelocityY(-300);
+//         }
+//     }
+// }
+
+function setupBulletCollisions(scene) {
+    scene.physics.add.collider(scene.bullets, scene.enemies, function(bullet, enemy) {
+        bullet.disableBody(true, true);
+        enemy.disableBody(true, true);
+    });
 }
