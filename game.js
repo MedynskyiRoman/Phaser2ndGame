@@ -118,8 +118,6 @@ function create() {
 
 
     lives = 3; //Кількість життів
-
-    livesText = this.add.text(1250, 260, 'Life:' + showLife(), { fontSize: '32px', fill: '#FFF'}).setScrollFactor(0);
     
     createLives(this);
     createMushrooms(this, worldWidth);
@@ -138,6 +136,15 @@ function create() {
     // Додавання кнопки перезавантаження
     var resetButton = this.add.text(400, 450, 'Reset', { fontSize: '32px', fill: '#FFFFFF' }).setInteractive().setScrollFactor(0);
     resetButton.on('pointerdown', restartGame, this);
+
+    bullets = this.physics.add.group({
+        defaultKey: 'bullet',
+        maxSize: 10 // Максимальна кількість снарядів, які можуть бути на екрані одночасно
+    });
+    
+    this.physics.add.collider(player, enemies, playerHitEnemy, null, this);
+
+    livesText = this.add.text(1250, 260, 'Life:' + showLife(), { fontSize: '32px', fill: '#FFF'}).setScrollFactor(0);
 }
 
 function update() {
@@ -181,6 +188,10 @@ function update() {
 
     // Оновлення тексту для відображення кількості активних ворогів
     enemyCountText.setText('Enemies: ' + enemies.countActive(true));
+
+    if (Phaser.Input.Keyboard.JustDown(cursors.space)) {
+        shootBullet(this);
+    }    
 }
 
 function collectStar(player, smoke) {
@@ -328,4 +339,39 @@ function moveEnemies(game) {
             }
         }
     });
+}
+
+function shootBullet(game) {
+    var bullet = bullets.get();
+    if (bullet) {
+        bullet.enableBody(true, player.x, player.y, true, true);
+        bullet.setVelocityX(300); // Налаштуйте швидкість за потребою
+        bullet.body.allowGravity = false; // Переконайтеся, що на кулі не діє гравітація
+
+        // Додавання колізій для снарядів
+        game.physics.add.collider(bullet, enemies, bulletHitEnemy, null, game);
+        game.physics.add.collider(bullet, platforms, bulletHitPlatform, null, game);
+        game.physics.add.collider(bullet, shells, bulletHitBomb, null, game);
+    }
+}
+
+
+function bulletHitEnemy(bullet, enemy) {
+    bullet.disableBody(true, true); // або bullet.destroy(); для видалення об'єкта
+    enemy.disableBody(true, true); // або enemy.destroy();
+}
+
+function bulletHitPlatform(bullet, platform) {
+    bullet.disableBody(true, true); // або bullet.destroy();
+}
+
+function bulletHitBomb(bullet, shell) {
+    bullet.disableBody(true, true); // або bullet.destroy();
+    shell.disableBody(true, true); // або bomb.destroy();
+}
+
+function playerHitEnemy(player, enemy) {
+    enemy.disableBody(true, true);
+    lives -= 1;
+    updateLivesDisplay();
 }
