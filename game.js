@@ -1,5 +1,3 @@
-//!!У коді проблеми з ворогами, і кнопка пробіл, кулі.!!
-
 // Конфігурація гри
 var config = {
     type: Phaser.AUTO,
@@ -166,6 +164,14 @@ function update() {
         player.setTint(0xff0000);
     }
 
+    if (lives <= 0) {
+        gameOver = true;
+        // Зупиняємо гру
+        this.physics.pause();
+        player.setTint(0xff0000);
+        livesText.setStyle({ fontSize: '32px', fill: '#FF0000' });
+    }
+
     updateEnemyMovement(this);
     //shootBullet(this);
 }
@@ -198,7 +204,7 @@ function hitBomb(player, shell) {
     if (player && shell) {
         shell.disableBody(true, true);
         lives -= 1;
-        updateLivesDisplay(); // Використовуйте функцію для оновлення відображення життів
+        updateLivesDisplay();
     }
 }
 
