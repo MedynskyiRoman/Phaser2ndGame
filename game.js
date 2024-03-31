@@ -126,9 +126,11 @@ function create() {
     createTrees(this, worldWidth);
     createIslands(this, worldWidth);
     flyIslands();
-    initializeEnemies(this);
-    createBullets(this);
-    setupBulletCollisions(this);
+    createEnemies(this);
+
+    // Додавання колізій для ворогів з платформами
+    this.physics.add.collider(enemies, platforms);
+
 
     // Додавання кнопки перезавантаження
     var resetButton = this.add.text(400, 450, 'Reset', { fontSize: '32px', fill: '#FFFFFF' }).setInteractive().setScrollFactor(0);
@@ -172,8 +174,7 @@ function update() {
         livesText.setStyle({ fontSize: '32px', fill: '#FF0000' });
     }
 
-    updateEnemyMovement(this);
-    //shootBullet(this);
+    moveEnemies(this);
 }
 
 function collectStar(player, smoke) {
@@ -295,52 +296,30 @@ function flyIslands() {
     }
 }
 
-
-//Вороги та постріли
-
-function initializeEnemies(scene) {
-    scene.enemies = scene.physics.add.group();
-    for(let i = 0; i < 5; i++) {
-        var x = Phaser.Math.Between(100, scene.scale.width - 100);
-        var y = Phaser.Math.Between(100, scene.scale.height - 100);
-        var enemy = scene.enemies.create(x, y, 'enemy');
-        enemy.setCollideWorldBounds(true);
+// Додавання ворогів
+function createEnemies(game) {
+    enemies = game.physics.add.group();
+    const numberOfEnemies = game.scale.width / 400; // Припустимо, один ворог на кожні 400 пікселів ширини
+    
+    for (let i = 0; i < numberOfEnemies; i++) {
+        const x = Phaser.Math.Between(100, worldWidth - 100);
+        const y = Phaser.Math.Between(100, worldHeight - 100);
+        const enemy = enemies.create(x, y, 'enemy');
+        enemy.setBounce(0.2).setCollideWorldBounds(true).setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
     }
 }
 
-function updateEnemyMovement(scene) {
-    scene.enemies.children.iterate(function(enemy) {
-        if (scene.player && enemy) {
-            // Тепер, коли ми впевнилися, що scene.player існує, ми можемо безпечно використовувати його координати
-            if (Phaser.Math.Distance.Between(scene.player.x, scene.player.y, enemy.x, enemy.y) < 400) {
-                scene.physics.moveToObject(enemy, scene.player, 120);
-            } else {
-                enemy.setVelocity(Phaser.Math.Between(-100, 100), Phaser.Math.Between(-100, 100));
+function moveEnemies(game) {
+    enemies.children.iterate(function(enemy) {
+        // Переміщення до гравця, якщо в межах зони агресії
+        if (Phaser.Math.Distance.Between(enemy.x, enemy.y, player.x, player.y) < 400) {
+            const direction = player.x < enemy.x ? -100 : 100;
+            enemy.setVelocityX(direction);
+
+            // Стрибок, якщо гравець вище
+            if (player.y < enemy.y - 100 && enemy.body.touching.down) {
+                enemy.setVelocityY(-300);
             }
         }
-    });
-}
-
-
-function createBullets(scene) {
-    scene.bullets = scene.physics.add.group({
-        defaultKey: 'bullet',
-        maxSize: 10
-    });
-}
-
-// function shootBullet(scene) {
-//     if (scene.cursors.space.isDown) {
-//         var bullet = scene.bullets.get(scene.player.x, scene.player.y - 20);
-//         if (bullet) {
-//             bullet.setActive(true).setVisible(true).setVelocityY(-300);
-//         }
-//     }
-// }
-
-function setupBulletCollisions(scene) {
-    scene.physics.add.collider(scene.bullets, scene.enemies, function(bullet, enemy) {
-        bullet.disableBody(true, true);
-        enemy.disableBody(true, true);
     });
 }
