@@ -345,13 +345,38 @@ function shootBullet(game) {
     var bullet = bullets.get();
     if (bullet) {
         bullet.enableBody(true, player.x, player.y, true, true);
-        bullet.setVelocityX(300); // Налаштуйте швидкість за потребою
-        bullet.body.allowGravity = false; // Переконайтеся, що на кулі не діє гравітація
+        bullet.setVelocityX(300);
+        bullet.body.allowGravity = false;
 
         // Додавання колізій для снарядів
         game.physics.add.collider(bullet, enemies, bulletHitEnemy, null, game);
         game.physics.add.collider(bullet, platforms, bulletHitPlatform, null, game);
         game.physics.add.collider(bullet, shells, bulletHitBomb, null, game);
+    }
+}
+
+function shootBullet(game) {
+    var bullet = bullets.get(player.x, player.y);
+    if (bullet) {
+        bullet.enableBody(true, player.x, player.y, true, true);
+        bullet.setActive(true).setVisible(true);
+        bullet.body.allowGravity = false;
+
+        // Використовуємо останній напрямок руху гравця для визначення напрямку стрільби
+        var bulletSpeed = player.body.velocity.x < 0 ? -300 : 300; // Напрямок стрільби
+        bullet.setVelocityX(bulletSpeed);
+
+        // Додавання колізій для снарядів
+        game.physics.add.collider(bullet, enemies, bulletHitEnemy, null, game);
+        game.physics.add.collider(bullet, platforms, bulletHitPlatform, null, game);
+        game.physics.add.collider(bullet, shells, bulletHitBomb, null, game);
+
+        // Встановлення дальності польоту кулі
+        game.time.delayedCall(1000, function() { // 1000 мс = 1 секунда дальності польоту
+            if (bullet.active) {
+                bullet.disableBody(true, true); // Видаляємо снаряд з гри
+            }
+        }, [], game);
     }
 }
 
