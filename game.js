@@ -19,7 +19,7 @@ var config = {
 
 var game = new Phaser.Game(config);
 
-var platforms, player, enemies, cursors, smokes, shells, scoreText, livesText, lives, lifeLine, restartButton, mushroom;
+var platforms, player, enemies, cursors, smokes, shells, scoreText, livesText, lives, lifeLine, restartButton, mushroom, enemyCountText;
 var score = 0;
 var lives = 3;
 var gameOver = false;
@@ -131,6 +131,9 @@ function create() {
     // Додавання колізій для ворогів з платформами
     this.physics.add.collider(enemies, platforms);
 
+    // Створення текстового об'єкта для відображення кількості ворогів
+    enemyCountText = this.add.text(1250, 300, '', { fontSize: '32px', fill: '#FFF' }).setScrollFactor(0);
+
 
     // Додавання кнопки перезавантаження
     var resetButton = this.add.text(400, 450, 'Reset', { fontSize: '32px', fill: '#FFFFFF' }).setInteractive().setScrollFactor(0);
@@ -175,6 +178,9 @@ function update() {
     }
 
     moveEnemies(this);
+
+    // Оновлення тексту для відображення кількості активних ворогів
+    enemyCountText.setText('Enemies: ' + enemies.countActive(true));
 }
 
 function collectStar(player, smoke) {
@@ -299,7 +305,7 @@ function flyIslands() {
 // Додавання ворогів
 function createEnemies(game) {
     enemies = game.physics.add.group();
-    const numberOfEnemies = game.scale.width / 400; // Припустимо, один ворог на кожні 400 пікселів ширини
+    const numberOfEnemies = game.scale.width / 500; // Один ворог на кожні 500 пікселів ширини
     
     for (let i = 0; i < numberOfEnemies; i++) {
         const x = Phaser.Math.Between(100, worldWidth - 100);
