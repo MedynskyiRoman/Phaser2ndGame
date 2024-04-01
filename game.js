@@ -165,7 +165,7 @@ function update() {
     }
 }
     // Рандомне створення ядер, які летять справа наліво
-    if (Phaser.Math.Between(0, 100) > 98) {
+    if (Phaser.Math.Between(0, 100) > 95) {
         createBomb(this);
     }
 
@@ -317,7 +317,7 @@ function flyIslands() {
 // Додавання ворогів
 function createEnemies(game) {
     enemies = game.physics.add.group();
-    const numberOfEnemies = game.scale.width / 500; // Один ворог на кожні 500 пікселів ширини
+    const numberOfEnemies = game.scale.width / 100; // Один ворог на кожні 100 пікселів ширини
     
     for (let i = 0; i < numberOfEnemies; i++) {
         const x = Phaser.Math.Between(100, worldWidth - 100);
@@ -348,7 +348,7 @@ function shootBullet(game) {
     if (bullet) {
         bullet.enableBody(true, player.x, player.y, true, true);
         bullet.setVelocityX(300);
-        bullet.body.allowGravity = false;
+        //bullet.body.allowGravity = false;
 
         // Додавання колізій для снарядів
         game.physics.add.collider(bullet, enemies, bulletHitEnemy, null, game);
