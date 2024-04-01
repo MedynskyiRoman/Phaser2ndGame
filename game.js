@@ -7,7 +7,7 @@ var config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 300 },
-            debug: true
+            debug: false
         }
     },
     scene: {
@@ -25,7 +25,7 @@ var lives = 3;
 var gameOver = false;
 var worldWidth = config.width * 2;
 var worldHeight = 1080;
-var yStart = 315;
+var yStart = 800;
 
 function preload() {
     this.load.image('background', 'assets/background.png');
@@ -100,6 +100,7 @@ function create() {
 
     smokes.children.iterate(function (child) {
         child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+        child.setDepth(10);
     });
 
     this.physics.add.collider(smokes, platforms);
@@ -122,7 +123,6 @@ function create() {
     createLives(this);
     createMushrooms(this, worldWidth);
     createTrees(this, worldWidth);
-    createIslands(this, worldWidth);
     flyIslands();
     createEnemies(this);
 
@@ -215,6 +215,7 @@ function createBomb(game) {
     var shell = shells.create(x, y, 'shell');
     shell.setVelocity(-Phaser.Math.Between(100, 200), 0); // Напрямок руху ядра наліво
     shell.body.setAllowGravity(false); // Вимкнення гравітації для ядра
+    shells.setDepth(10);
 }
 
 
@@ -249,11 +250,11 @@ function createTrees(game, worldWidth) {
     }
 }
 
-function createIslands(game, worldWidth) {
-    for (var x = 0; x<worldWidth; x = x + Phaser.Math.FloatBetween(400, 500)){
-        var y = Phaser.Math.FloatBetween(128, 128*6)
-    }
-}
+// function createIslands(game, worldWidth) {
+//     for (var x = 0; x<worldWidth; x = x + Phaser.Math.FloatBetween(400, 500)){
+//         var y = Phaser.Math.FloatBetween(128, 128*6)
+//     }
+// }
 
 function createLives(game) {
     const livesGroup = game.physics.add.group();
@@ -297,9 +298,9 @@ function flyIslands() {
     var x = 0;
     while (x < worldWidth) {
         x += Phaser.Math.Between(400, 500); // Додаємо випадкову відстань до x для наступного острова
-        y += Phaser.Math.Between(200, 330);
-        var yStep = Phaser.Math.Between(1, 3);
-        var y = yStart * yStep;
+        //y += Phaser.Math.Between(200, 330);
+        var yStep = Phaser.Math.Between(-1, 0);
+        var y = yStart - 128 * yStep;
 
         platforms.create(x, y, 'leftisl').setOrigin(1, 1).setScale(0.5).setSize(64, 46.5).setDepth(10);
 
@@ -323,6 +324,7 @@ function createEnemies(game) {
         const y = Phaser.Math.Between(100, worldHeight - 100);
         const enemy = enemies.create(x, y, 'enemy');
         enemy.setBounce(0.2).setCollideWorldBounds(true).setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
+        enemies.setDepth(Phaser.Math.Between(2));
     }
 }
 
@@ -361,6 +363,7 @@ function shootBullet(game) {
         bullet.enableBody(true, player.x, player.y, true, true);
         bullet.setActive(true).setVisible(true);
         bullet.body.allowGravity = false;
+        bullet.setDepth(2);
 
         // Використовуємо останній напрямок руху гравця для визначення напрямку стрільби
         var bulletSpeed = player.body.velocity.x < 0 ? -300 : 300; // Напрямок стрільби
