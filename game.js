@@ -337,7 +337,7 @@ function moveEnemies(game) {
 
             // Стрибок, якщо гравець вище
             if (player.y < enemy.y - 100 && enemy.body.touching.down) {
-                enemy.setVelocityY(-315);
+                enemy.setVelocityY(-320);
             }
         }
     });
