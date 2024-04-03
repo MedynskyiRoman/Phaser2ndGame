@@ -161,7 +161,7 @@ function update() {
     }
 
     if (cursors.up.isDown && player.body.touching.down) {
-        player.setVelocityY(-330);
+        player.setVelocityY(-350);
     }
 }
     // Рандомне створення ядер, які летять справа наліво
@@ -337,7 +337,7 @@ function moveEnemies(game) {
 
             // Стрибок, якщо гравець вище
             if (player.y < enemy.y - 100 && enemy.body.touching.down) {
-                enemy.setVelocityY(-300);
+                enemy.setVelocityY(-315);
             }
         }
     });
