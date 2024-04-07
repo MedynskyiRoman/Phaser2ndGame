@@ -33,7 +33,7 @@ function preload() {
     this.load.image('smoke', 'assets/smoke.png');
     this.load.image('shell', 'assets/shell.png');
     this.load.image('fon', 'assets/fon.png');
-    this.load.image('mushroom', 'assets/mushroom.png');
+    this.load.image('mushroom', 'assets/mushrooms.png');
     this.load.image('tree', 'assets/tree.png');
     this.load.image('leftisl', 'assets/left_island.png');
     this.load.image('rghtisl', 'assets/right_island.png');
